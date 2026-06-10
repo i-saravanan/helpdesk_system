@@ -1,41 +1,35 @@
 package org.helpdesk.service;
 
-import org.helpdesk.dao.UserDao;
 import org.helpdesk.entity.User;
 import org.helpdesk.entity.Role;
+import org.helpdesk.exception.DuplicateEmailException;
+import org.helpdesk.exception.UnauthorizedActionException;
+import org.helpdesk.exception.UserNotFoundException;
+import org.helpdesk.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import java.util.Objects;
-
+@Service
 public class AuthService {
-    private static final Logger logger = Logger.getLogger(AuthService.class.getName());
-
-    UserDao userDao;
-    public AuthService(){
-        this.userDao = new UserDao();
+    private final UserRepository userRepository;
+    public AuthService(UserRepository userRepository){
+        this.userRepository = userRepository;
     }
+
     public User registerUser(String name, String email, String password, Role role){
-        try{
-            if(userDao.findByEmail(email) == null){
-                User user = new User(name, email, password, role);
-                userDao.saveUser(user);
-                return user;
-            }else return null;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in registerUser", e);
-            return null;
-        }
+            if(userRepository.existsByEmail(email))
+                throw new DuplicateEmailException("Email already registered.");
+            User user = new User(name, email, password, role);
+            userRepository.save(user);
+            return user;
     }
     public User loginUser(String email, String password){
-        try{
-            User user = userDao.findByEmail(email);
-            if(user != null && Objects.equals(user.getPassword(), password)) return user;
-            else return null;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in loginUser", e);
-            return null;
-        }
+            User user = userRepository.findByEmail(email).orElseThrow(
+                    ()->new UserNotFoundException(
+                            "Email is not registered."
+                    )
+            );
+            if(!user.getPassword().equals(password)) throw new UnauthorizedActionException("Password is wrong, try again.");
+            return user;
     }
 }
