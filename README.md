@@ -1,39 +1,67 @@
-# 🎫 Helpdesk System
+# 🎫 HelpDesk Ticket Management System
 
-A RESTful Helpdesk System built using Spring Boot, Spring Data JPA, Hibernate, and MySQL.
+A role-based HelpDesk Ticket Management System built using Spring Boot, Spring Data JPA, Hibernate, and MySQL.
 
-This project allows users to create support tickets, agents to manage assigned tickets, and administrators to assign tickets to agents.
+The system allows Users to create support tickets, Agents to manage assigned tickets, and Admins to assign and monitor tickets through RESTful APIs.
 
 ---
 
 ## 🚀 Features
 
-### 👤 User Features
-- Register new users
+### 👤 User
+- Register account
 - Login with email and password
 - Create support tickets
 - View own tickets
 
-### 👨‍💼 Agent Features
+### 👨‍💼 Agent
 - View assigned tickets
 - Update ticket status
 
-### 👑 Admin Features
+### 👑 Admin
 - View all tickets
 - Assign tickets to agents
 
 ---
 
+## 🏗️ Architecture
+
+```text
+Client (Postman)
+       │
+       ▼
+ Controller
+       │
+       ▼
+   Service
+       │
+       ▼
+ Repository
+       │
+       ▼
+ MySQL Database
+```
+
+This project follows a layered architecture to separate business logic, database operations, and API handling.
+
+---
+
 ## 🛠️ Tech Stack
 
+### Backend
 - Java 17
 - Spring Boot
 - Spring Data JPA
-- Hibernate
-- MySQL
+- Hibernate ORM
 - Maven
-- Lombok (Optional)
-- Postman (API Testing)
+
+### Database
+- MySQL
+
+### Tools
+- IntelliJ IDEA
+- Postman
+- Git & GitHub
 
 ---
 
@@ -75,9 +103,7 @@ src/main/java/org/helpdesk
 
 ---
 
-## 🗄️ Database
-
-MySQL Database
+## 🗄️ Database Configuration
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/ticket_system
@@ -90,17 +116,17 @@ spring.jpa.show-sql=true
 
 ---
 
-## 📌 API Endpoints
+# 📌 API Endpoints
 
-### Authentication
+## Authentication
 
-#### Register User
+### Register User
 
 ```http
 POST /auth/register
 ```
 
-Request Body
+Request:
 
 ```json
 {
@@ -113,13 +139,13 @@ Request Body
 
 ---
 
-#### Login User
+### Login User
 
 ```http
 POST /auth/login
 ```
 
-Request Body
+Request:
 
 ```json
 {
@@ -130,26 +156,26 @@ Request Body
 
 ---
 
-### Helpdesk
+## Ticket Management
 
-#### Create Ticket
+### Create Ticket
 
 ```http
 POST /tickets/create/{userId}
 ```
 
-Request Body
+Request:
 
 ```json
 {
   "title": "Login Issue",
-  "description": "Unable to login to the system"
+  "description": "Unable to login"
 }
 ```
 
 ---
 
-#### View User Tickets
+### View User Tickets
 
 ```http
 GET /tickets/user/{userId}
@@ -157,7 +183,7 @@ GET /tickets/user/{userId}
 
 ---
 
-#### View Assigned Tickets
+### View Assigned Tickets
 
 ```http
 GET /tickets/agent/{agentId}
@@ -165,7 +191,7 @@ GET /tickets/agent/{agentId}
 
 ---
 
-#### Assign Ticket To Agent
+### Assign Ticket To Agent
 
 ```http
 PUT /tickets/{ticketId}/assign/{agentId}/{adminId}
@@ -173,13 +199,13 @@ PUT /tickets/{ticketId}/assign/{agentId}/{adminId}
 
 ---
 
-#### Update Ticket Status
+### Update Ticket Status
 
 ```http
 PUT /tickets/{ticketId}/status/{agentId}
 ```
 
-Request Body
+Request:
 
 ```json
 {
@@ -187,7 +213,7 @@ Request Body
 }
 ```
 
-Possible Status Values
+Available Status Values:
 
 ```text
 OPEN
@@ -198,7 +224,7 @@ CLOSED
 
 ---
 
-#### View All Tickets
+### View All Tickets
 
 ```http
 GET /tickets/admin/{adminId}
@@ -206,9 +232,22 @@ GET /tickets/admin/{adminId}
 
 ---
 
+## 📦 Sample Response
+
+```json
+{
+  "id": 1,
+  "title": "Login Issue",
+  "description": "Unable to login",
+  "status": "OPEN"
+}
+```
+
+---
+
 ## ✅ Validation
 
-Implemented using Bean Validation.
+Implemented using Jakarta Bean Validation.
 
 Examples:
 
@@ -218,7 +257,11 @@ Examples:
 @Size(min = 6, max = 20)
 ```
 
-Validation errors are automatically returned to the client.
+Benefits:
+
+- Prevents invalid data
+- Automatic request validation
+- Cleaner controller code
 
 ---
 
@@ -237,7 +280,15 @@ Custom Exceptions:
 - TicketNotFoundException
 - UnauthorizedActionException
 
-Provides consistent error responses across all APIs.
+Provides consistent API error responses.
+
+Example:
+
+```json
+{
+  "message": "Ticket not found."
+}
+```
 
 ---
 
@@ -254,46 +305,104 @@ Used in:
 - assignTicketToAgent()
 - updateTicketStatus()
 
-Ensures automatic rollback when failures occur.
+Ensures automatic rollback if an operation fails.
 
 ---
 
-## 🎯 Learning Outcomes
+## 🧠 Key Concepts Implemented
 
-This project demonstrates:
-
-- REST API Development
+- RESTful API Design
 - Layered Architecture
-- Spring Boot Fundamentals
 - Dependency Injection
+- Repository Pattern
+- DTO Pattern
 - Spring Data JPA
 - Hibernate ORM
-- MySQL Integration
+- Bean Validation
+- Global Exception Handling
+- Transaction Management
+- Role-Based Access Control (RBAC)
+
+---
+
+## 🚀 Run Locally
+
+Clone the repository:
+
+```bash
+git clone https://github.com/i-saravanan/helpdesk_system.git
+```
+
+Move into the project directory:
+
+```bash
+cd helpdesk_system
+```
+
+Build the project:
+
+```bash
+mvn clean install
+```
+
+Run the application:
+
+```bash
+mvn spring-boot:run
+```
+
+Application starts at:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## 📈 Current Status
+
+### Version 1.0
+
+Implemented:
+
+- User Registration
+- User Login
+- Ticket Creation
+- Ticket Assignment
+- Ticket Status Updates
 - Validation
 - Exception Handling
 - Transaction Management
-- DTO Usage
-- Role-Based Access Logic
 
 ---
 
-## 🚀 Future Enhancements
+## 🔮 Future Enhancements
 
 - JWT Authentication
 - Spring Security
-- Password Encryption (BCrypt)
-- Swagger/OpenAPI Documentation
+- BCrypt Password Encryption
+- Swagger / OpenAPI Documentation
 - Pagination & Sorting
 - Search & Filtering
 - Audit Logging
-- Docker Deployment
+- Docker Containerization
 - AWS Deployment
 
 ---
 
 ## 👨‍💻 Author
 
-**Saravanan I**
+### Saravanan I
 
 - Java Backend Developer
-- Spring Boot Enthusiast
+- Spring Boot Learner
+
+GitHub:
+https://github.com/i-saravanan
+
+LinkedIn:
+www.linkedin.com/in/saravanan-i
+
+---
+
+⭐ If you found this project useful, consider giving it a star.
